@@ -21,15 +21,22 @@ type Product struct {
 type CreateProductRequest struct {
 	SKU   string          `json:"sku" binding:"required"`
 	Name  string          `json:"name" binding:"required"`
-	Qty   int             `json:"qty" binding:"required,min=0"`
+	Qty   int             `json:"qty" binding:"min=0"`
+	Price decimal.Decimal `json:"price" binding:"required"`
+}
+
+type UpdateProductRequest struct {
+	Name  string          `json:"name" binding:"required"`
+	Qty   int             `json:"qty" binding:"min=0"`
 	Price decimal.Decimal `json:"price" binding:"required"`
 }
 
 type ProductRepository interface {
 	FindBySKU(ctx context.Context, sku string) (*Product, error)
-	CreateProduct(ctx context.Context, req *Product) (*Product, error)
+	Create(ctx context.Context, req *Product) (*Product, error)
 	GetAll(ctx context.Context) ([]*Product, error)
 	DeleteBySKU(ctx context.Context, sku string) error
+	Update(ctx context.Context, product *Product) error
 }
 
 type ProductUsecase interface {
@@ -37,4 +44,5 @@ type ProductUsecase interface {
 	GetAllProducts(ctx context.Context) ([]*Product, *errs.Error)
 	GetProductBySKU(ctx context.Context, sku string) (*Product, *errs.Error)
 	DeleteProduct(ctx context.Context, sku string) *errs.Error
+	UpdateProduct(ctx context.Context, sku string, req *UpdateProductRequest) (*Product, *errs.Error)
 }

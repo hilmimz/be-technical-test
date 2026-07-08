@@ -76,3 +76,26 @@ func (h *ProductHandler) DeleteProductHandler(c *gin.Context) {
 	}
 	c.Status(http.StatusNoContent)
 }
+
+func (h *ProductHandler) UpdateProductHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	sku := c.Param("sku")
+	var req domain.UpdateProductRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			response.ResponseNOK(c, http.StatusBadRequest, "validation error", validation.FormatValidationErrors(ve))
+			return
+		}
+		response.ResponseNOK(c, http.StatusBadRequest, "invalid request body", nil)
+		return
+	}
+
+	product, err := h.productUsecase.UpdateProduct(ctx, sku, &req)
+	if err != nil {
+		response.ResponseNOK(c, err.Code, err.Message, nil)
+		return
+	}
+	response.ResponseOK(c, http.StatusOK, "product updated successfully", product)
+}

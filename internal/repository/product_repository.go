@@ -33,7 +33,7 @@ func (r *ProductRepository) GetAll(ctx context.Context) ([]*domain.Product, erro
 	return products, nil
 }
 
-func (r *ProductRepository) CreateProduct(ctx context.Context, req *domain.Product) (*domain.Product, error) {
+func (r *ProductRepository) Create(ctx context.Context, req *domain.Product) (*domain.Product, error) {
 	err := r.db.WithContext(ctx).Create(req).Error
 	if err != nil {
 		return nil, err
@@ -51,4 +51,8 @@ func (r *ProductRepository) DeleteBySKU(ctx context.Context, sku string) error {
 	}
 
 	return nil
+}
+
+func (r *ProductRepository) Update(ctx context.Context, product *domain.Product) error {
+	return r.db.WithContext(ctx).Save(product).Error
 }

@@ -51,7 +51,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, req *domain.CreatePr
 		Price: req.Price,
 	}
 
-	created, err := u.productRepo.CreateProduct(ctx, prod)
+	created, err := u.productRepo.Create(ctx, prod)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, errs.Conflict("sku already exists", nil)
@@ -89,4 +89,28 @@ func (u *ProductUseCase) DeleteProduct(ctx context.Context, sku string) *errs.Er
 		return errs.Internal("failed to delete product", err)
 	}
 	return nil
+}
+
+func (u *ProductUseCase) UpdateProduct(ctx context.Context, sku string, req *domain.UpdateProductRequest) (*domain.Product, *errs.Error) {
+	if req.Qty < 0 {
+		return nil, errs.BadRequest("qty cannot be negative", nil)
+	}
+	if req.Price.LessThanOrEqual(decimal.Zero) {
+		return nil, errs.BadRequest("price must be greater than 0", nil)
+	}
+	product, err := u.productRepo.FindBySKU(ctx, sku)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound("product not found", nil)
+		}
+		return nil, errs.Internal("failed to get product by sku", err)
+	}
+	product.Name = req.Name
+	product.Qty = req.Qty
+	product.Price = req.Price
+	err = u.productRepo.Update(ctx, product)
+	if err != nil {
+		return nil, errs.Internal("failed to update product", err)
+	}
+	return product, nil
 }

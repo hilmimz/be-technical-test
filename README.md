@@ -71,7 +71,7 @@ Implementasi ini sangat rentan oleh race condition, karena proses yang tidak ato
 Berikut merupakan hasil test menggunakan perintah `hey -n 100 -c 100`:
 <img src="./assets/naive.png" alt="Hasil Test Naif" width="60%" />
 
-Dari 100 request, terdapat 1 request berhasil, 1 request internal server error, dan 98 bad request. Satu request internal server error ini menunjukkan terdapat 1 request yang lolos pengecekan sebelum request sukses berhasil update qty di database (race condition). Namun tetap terjadi internal server error karena adanya constraint `CHECK (qty >= 0)` pada kolom `qty`.
+Dari 100 request, terdapat 1 request berhasil, 1 request internal server error, dan 98 bad request. Satu request internal server error ini menunjukkan terdapat 1 request yang lolos pengecekan sebelum request sukses, berhasil update qty di database (race condition). Namun tetap terjadi internal server error karena adanya constraint `CHECK (qty >= 0)` pada kolom `qty`.
 Masalah ini bisa diatasi dengan melakukan atomic sql dengan memastikan jumlah qty dari produk cukup, bersamaan dengan query update. Namun hal ini menyebabkan banyak request yang langsung direct ke database. Oleh karena itu, diterapkan implementasi kedua dengan menambahkan layer Redis sebagai cache untuk menyimpan data qty.
 
 ### Implementasi Decrement dengan Redis + Lua Script:
@@ -87,4 +87,4 @@ Implementasi ini memanfaatkan Redis sebagai cache untuk menyimpan data qty. Endp
 Berikut merupakan hasil test menggunakan perintah `hey -n 100 -c 100`:
 <img src="./assets/success.png" alt="Hasil Test Naif" width="60%" />
 
-Hasil dari pengujian tersebut menunjukkan bahwa hanya ada 1 request yang sukses dan sisanya mengalami bad request (insufficient stock). Dan tetap menjaga qty di database tidak negative karena hanya ada satu request sukses dan adanya constraint `CHECK (qty >= 0)` pada kolom `qty`.
+Hasil dari pengujian tersebut menunjukkan bahwa hanya ada 1 request yang sukses dan sisanya mengalami bad request (insufficient stock). Implementasi ini tetap menjaga qty di database tidak negative karena hanya ada satu request sukses dan adanya constraint `CHECK (qty >= 0)` pada kolom `qty`.

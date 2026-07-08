@@ -115,11 +115,11 @@ func (h *ProductHandler) PurchaseProductHandler(c *gin.Context) {
 		return
 	}
 
-	product, errs := h.productUsecase.PurchaseProduct(ctx, sku, &req)
+	errs := h.productUsecase.PurchaseProduct(ctx, sku, &req)
 	if errs != nil {
 		response.ResponseNOK(c, errs.Code, errs.Message, nil)
 		return
 	}
 
-	response.ResponseOK(c, http.StatusOK, "purchase successful", product)
+	response.ResponseOK(c, http.StatusOK, "purchase successful", nil)
 }

@@ -41,7 +41,14 @@ type ProductRepository interface {
 	GetAll(ctx context.Context) ([]*Product, error)
 	DeleteBySKU(ctx context.Context, sku string) error
 	Update(ctx context.Context, product *Product) error
-	DecrementStock(ctx context.Context, sku string, qty int) error
+	DecrementStockNaive(ctx context.Context, sku string, qty int) error
+	DecrementStock(ctx context.Context, sku string, qty int) (int64, error)
+}
+
+type StockRepository interface {
+	SetStock(ctx context.Context, sku string, qty int) error
+	DecrementStock(ctx context.Context, sku string, qty int) (int, error)
+	IncrementStock(ctx context.Context, sku string, qty int) error
 }
 
 type ProductUsecase interface {
@@ -50,5 +57,5 @@ type ProductUsecase interface {
 	GetProductBySKU(ctx context.Context, sku string) (*Product, *errs.Error)
 	DeleteProduct(ctx context.Context, sku string) *errs.Error
 	UpdateProduct(ctx context.Context, sku string, req *UpdateProductRequest) (*Product, *errs.Error)
-	PurchaseProduct(ctx context.Context, sku string, req *PurchaseProductRequest) (*Product, *errs.Error)
+	PurchaseProduct(ctx context.Context, sku string, req *PurchaseProductRequest) *errs.Error
 }

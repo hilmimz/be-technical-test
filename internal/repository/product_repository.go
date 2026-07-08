@@ -61,10 +61,22 @@ func (r *ProductRepository) Update(ctx context.Context, product *domain.Product)
 // It does not check if the stock is sufficient before decrementing
 // This approach is used to show the success of Redis and Lua script to decrement stock atomically
 // Without hitting the database directly with a lot of concurrent requests
-func (r *ProductRepository) DecrementStock(ctx context.Context, sku string, qty int) error {
+func (r *ProductRepository) DecrementStockNaive(ctx context.Context, sku string, qty int) error {
 	return r.db.WithContext(ctx).
 		Model(&domain.Product{}).
 		Where("sku = ?", sku).
 		UpdateColumn("qty", gorm.Expr("qty - ?", qty)).
 		Error
+}
+
+func (r *ProductRepository) DecrementStock(ctx context.Context, sku string, qty int) (int64, error) {
+	tx := r.db.WithContext(ctx).
+		Model(&domain.Product{}).
+		Where("sku = ? AND qty >= ?", sku, qty).
+		UpdateColumn("qty", gorm.Expr("qty - ?", qty))
+
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
 }

@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Database DatabaseConfig
+	Redis    RedisConfig
 }
 
 type DatabaseConfig struct {
@@ -15,6 +16,13 @@ type DatabaseConfig struct {
 	User     string `env:"DB_USER" envDefault:"postgres"`
 	Password string `env:"DB_PASSWORD"`
 	Name     string `env:"DB_NAME" envDefault:"mydb"`
+}
+
+type RedisConfig struct {
+	Host     string `env:"REDIS_HOST" envDefault:"localhost"`
+	Port     string `env:"REDIS_PORT" envDefault:"6379"`
+	Password string `env:"REDIS_PASSWORD"`
+	DB       int    `env:"REDIS_DB" envDefault:"0"`
 }
 
 func NewConfig() (*Config, error) {

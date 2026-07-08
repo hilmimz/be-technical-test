@@ -5,6 +5,7 @@ import (
 	"be-technical-test/internal/database"
 	"be-technical-test/internal/handler"
 	"be-technical-test/internal/repository"
+	"be-technical-test/internal/repository/redis"
 	"be-technical-test/internal/usecase"
 	"be-technical-test/pkg/validation"
 	"log"
@@ -25,14 +26,21 @@ func main() {
 		log.Fatal("failed to connect to database: ", err)
 	}
 
+	// Init Redis
+	redisClient, err := database.NewRedisClient(&cfg.Redis)
+	if err != nil {
+		log.Fatal("failed to init redis: ", err)
+	}
+
 	// Register Validators
 	validation.RegisterValidators()
 
 	// Init Repository
 	productRepo := repository.NewProductRepository(db.DB)
+	stockRepo := redis.NewStockRepository(redisClient)
 
 	// Init Usecase
-	productUseCase := usecase.NewProductUseCase(productRepo)
+	productUseCase := usecase.NewProductUseCase(productRepo, stockRepo)
 
 	// Init Handlers
 	productHandler := handler.NewProductHandler(productUseCase)

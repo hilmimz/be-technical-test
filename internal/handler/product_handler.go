@@ -99,3 +99,27 @@ func (h *ProductHandler) UpdateProductHandler(c *gin.Context) {
 	}
 	response.ResponseOK(c, http.StatusOK, "product updated successfully", product)
 }
+
+func (h *ProductHandler) PurchaseProductHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	sku := c.Param("sku")
+
+	var req domain.PurchaseProductRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			response.ResponseNOK(c, http.StatusBadRequest, "validation error", validation.FormatValidationErrors(ve))
+			return
+		}
+		response.ResponseNOK(c, http.StatusBadRequest, "invalid request body", nil)
+		return
+	}
+
+	product, errs := h.productUsecase.PurchaseProduct(ctx, sku, &req)
+	if errs != nil {
+		response.ResponseNOK(c, errs.Code, errs.Message, nil)
+		return
+	}
+
+	response.ResponseOK(c, http.StatusOK, "purchase successful", product)
+}

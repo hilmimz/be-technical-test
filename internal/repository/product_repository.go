@@ -56,3 +56,15 @@ func (r *ProductRepository) DeleteBySKU(ctx context.Context, sku string) error {
 func (r *ProductRepository) Update(ctx context.Context, product *domain.Product) error {
 	return r.db.WithContext(ctx).Save(product).Error
 }
+
+// DecrementStock decrements the stock of a product by a given quantity using a naive approach
+// It does not check if the stock is sufficient before decrementing
+// This approach is used to show the success of Redis and Lua script to decrement stock atomically
+// Without hitting the database directly with a lot of concurrent requests
+func (r *ProductRepository) DecrementStock(ctx context.Context, sku string, qty int) error {
+	return r.db.WithContext(ctx).
+		Model(&domain.Product{}).
+		Where("sku = ?", sku).
+		UpdateColumn("qty", gorm.Expr("qty - ?", qty)).
+		Error
+}

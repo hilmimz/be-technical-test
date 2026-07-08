@@ -114,3 +114,25 @@ func (u *ProductUseCase) UpdateProduct(ctx context.Context, sku string, req *dom
 	}
 	return product, nil
 }
+
+func (u *ProductUseCase) PurchaseProduct(ctx context.Context, sku string, req *domain.PurchaseProductRequest) (*domain.Product, *errs.Error) {
+	product, err := u.productRepo.FindBySKU(ctx, sku)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound("product not found", nil)
+		}
+		return nil, errs.Internal("failed to get product", err)
+	}
+
+	if product.Qty < req.Qty {
+		return nil, errs.BadRequest("insufficient stock", nil)
+	}
+
+	product.Qty -= req.Qty
+
+	if err := u.productRepo.DecrementStock(ctx, sku, req.Qty); err != nil {
+		return nil, errs.Internal("failed to update stock", err)
+	}
+
+	return product, nil
+}

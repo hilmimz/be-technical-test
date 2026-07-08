@@ -31,12 +31,17 @@ type UpdateProductRequest struct {
 	Price decimal.Decimal `json:"price" binding:"required"`
 }
 
+type PurchaseProductRequest struct {
+	Qty int `json:"qty" binding:"required,min=1"`
+}
+
 type ProductRepository interface {
 	FindBySKU(ctx context.Context, sku string) (*Product, error)
 	Create(ctx context.Context, req *Product) (*Product, error)
 	GetAll(ctx context.Context) ([]*Product, error)
 	DeleteBySKU(ctx context.Context, sku string) error
 	Update(ctx context.Context, product *Product) error
+	DecrementStock(ctx context.Context, sku string, qty int) error
 }
 
 type ProductUsecase interface {
@@ -45,4 +50,5 @@ type ProductUsecase interface {
 	GetProductBySKU(ctx context.Context, sku string) (*Product, *errs.Error)
 	DeleteProduct(ctx context.Context, sku string) *errs.Error
 	UpdateProduct(ctx context.Context, sku string, req *UpdateProductRequest) (*Product, *errs.Error)
+	PurchaseProduct(ctx context.Context, sku string, req *PurchaseProductRequest) (*Product, *errs.Error)
 }

@@ -1,0 +1,13 @@
+# Binaries
+/bin/
+/tmp/
+*.exe
+be-technical-test
+
+# Go
+*.test
+*.out
+vendor/
+
+# Env
+.env

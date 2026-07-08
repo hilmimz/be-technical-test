@@ -34,4 +34,5 @@ type ProductRepository interface {
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *CreateProductRequest) (*Product, *errs.Error)
 	GetAllProducts(ctx context.Context) ([]*Product, *errs.Error)
+	GetProductBySKU(ctx context.Context, sku string) (*Product, *errs.Error)
 }

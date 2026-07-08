@@ -50,3 +50,16 @@ func (h *ProductHandler) GetAllProductsHandler(c *gin.Context) {
 	}
 	response.ResponseOK(c, http.StatusOK, "products retrieved successfully", products)
 }
+
+func (h *ProductHandler) GetProductBySKUHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	sku := c.Param("sku")
+
+	product, errs := h.productUsecase.GetProductBySKU(ctx, sku)
+	if errs != nil {
+		response.ResponseNOK(c, errs.Code, errs.Message, nil)
+		return
+	}
+	response.ResponseOK(c, http.StatusOK, "product retrieved successfully", product)
+}

@@ -68,3 +68,14 @@ func (u *ProductUseCase) GetAllProducts(ctx context.Context) ([]*domain.Product,
 	}
 	return products, nil
 }
+
+func (u *ProductUseCase) GetProductBySKU(ctx context.Context, sku string) (*domain.Product, *errs.Error) {
+	product, err := u.productRepo.FindBySKU(ctx, sku)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errs.NotFound("product not found", nil)
+		}
+		return nil, errs.Internal("failed to get product by sku", err)
+	}
+	return product, nil
+}

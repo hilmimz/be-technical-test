@@ -43,6 +43,7 @@ func main() {
 	// Product
 	products := router.Group("/products")
 	products.POST("", productHandler.CreateProductHandler)
+	products.GET("", productHandler.GetAllProductsHandler)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("failed to start server: ", err)

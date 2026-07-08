@@ -37,7 +37,7 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, req *domain.CreatePr
 		return nil, errs.Conflict("sku already exists", nil)
 	}
 
-	// Generate ID using snowflake ID generator
+	// Generate ID using sonnyflake ID generator
 	id, err := idgen.NextID()
 	if err != nil {
 		return nil, errs.Internal("failed to generate id", err)
@@ -59,4 +59,12 @@ func (u *ProductUseCase) CreateProduct(ctx context.Context, req *domain.CreatePr
 		return nil, errs.Internal("failed to create product", err)
 	}
 	return created, nil
+}
+
+func (u *ProductUseCase) GetAllProducts(ctx context.Context) ([]*domain.Product, *errs.Error) {
+	products, err := u.productRepo.GetAll(ctx)
+	if err != nil {
+		return nil, errs.Internal("failed to get all products", err)
+	}
+	return products, nil
 }

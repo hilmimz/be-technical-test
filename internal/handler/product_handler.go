@@ -40,3 +40,13 @@ func (h *ProductHandler) CreateProductHandler(c *gin.Context) {
 	}
 	response.ResponseOK(c, http.StatusCreated, "product created successfully", resp)
 }
+
+func (h *ProductHandler) GetAllProductsHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	products, errs := h.productUsecase.GetAllProducts(ctx)
+	if errs != nil {
+		response.ResponseNOK(c, errs.Code, errs.Message, nil)
+		return
+	}
+	response.ResponseOK(c, http.StatusOK, "products retrieved successfully", products)
+}

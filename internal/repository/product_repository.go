@@ -24,6 +24,15 @@ func (r *ProductRepository) FindBySKU(ctx context.Context, sku string) (*domain.
 	return &product, nil
 }
 
+func (r *ProductRepository) GetAll(ctx context.Context) ([]*domain.Product, error) {
+	var products []*domain.Product
+	err := r.db.WithContext(ctx).Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
 func (r *ProductRepository) CreateProduct(ctx context.Context, req *domain.Product) (*domain.Product, error) {
 	err := r.db.WithContext(ctx).Create(req).Error
 	if err != nil {

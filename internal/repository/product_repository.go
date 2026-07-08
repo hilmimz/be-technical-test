@@ -40,3 +40,15 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, req *domain.Produ
 	}
 	return req, nil
 }
+
+func (r *ProductRepository) DeleteBySKU(ctx context.Context, sku string) error {
+	tx := r.db.WithContext(ctx).Where("sku = ?", sku).Delete(&domain.Product{})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+
+	return nil
+}

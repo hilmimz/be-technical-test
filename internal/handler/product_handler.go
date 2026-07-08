@@ -63,3 +63,16 @@ func (h *ProductHandler) GetProductBySKUHandler(c *gin.Context) {
 	}
 	response.ResponseOK(c, http.StatusOK, "product retrieved successfully", product)
 }
+
+func (h *ProductHandler) DeleteProductHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	sku := c.Param("sku")
+
+	err := h.productUsecase.DeleteProduct(ctx, sku)
+	if err != nil {
+		response.ResponseNOK(c, err.Code, err.Message, nil)
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

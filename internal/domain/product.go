@@ -29,10 +29,12 @@ type ProductRepository interface {
 	FindBySKU(ctx context.Context, sku string) (*Product, error)
 	CreateProduct(ctx context.Context, req *Product) (*Product, error)
 	GetAll(ctx context.Context) ([]*Product, error)
+	DeleteBySKU(ctx context.Context, sku string) error
 }
 
 type ProductUsecase interface {
 	CreateProduct(ctx context.Context, req *CreateProductRequest) (*Product, *errs.Error)
 	GetAllProducts(ctx context.Context) ([]*Product, *errs.Error)
 	GetProductBySKU(ctx context.Context, sku string) (*Product, *errs.Error)
+	DeleteProduct(ctx context.Context, sku string) *errs.Error
 }

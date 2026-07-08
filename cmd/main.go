@@ -45,6 +45,7 @@ func main() {
 	products.POST("", productHandler.CreateProductHandler)
 	products.GET("", productHandler.GetAllProductsHandler)
 	products.GET("/:sku", productHandler.GetProductBySKUHandler)
+	products.DELETE("/:sku", productHandler.DeleteProductHandler)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("failed to start server: ", err)

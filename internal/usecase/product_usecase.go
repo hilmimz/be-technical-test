@@ -79,3 +79,14 @@ func (u *ProductUseCase) GetProductBySKU(ctx context.Context, sku string) (*doma
 	}
 	return product, nil
 }
+
+func (u *ProductUseCase) DeleteProduct(ctx context.Context, sku string) *errs.Error {
+	err := u.productRepo.DeleteBySKU(ctx, sku)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errs.NotFound("product not found", nil)
+		}
+		return errs.Internal("failed to delete product", err)
+	}
+	return nil
+}

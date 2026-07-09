@@ -20,10 +20,12 @@ PostgreSQL, dan Redis.
 ### Dengan Docker Compose (direkomendasikan)
 
 ```bash
+cp .env.example .env
+
 docker compose up --build
 ```
 
-Ini menjalankan Postgres, Redis, service migrasi, dan service API.
+Postgres, Redis, service migrasi, dan service API akan dijalankan di docker, akses di `http://localhost:8080`.
 
 ### Manual / lokal
 
@@ -36,7 +38,7 @@ make migrate-up   # jalankan migrasi database
 make run          # jalankan API
 ```
 
-API berjalan di `:8080`.
+API berjalan di `http://localhost:8080`.
 
 ## Story 1 - Inventory Management (CRUD)
 
